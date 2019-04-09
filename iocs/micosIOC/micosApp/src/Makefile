@@ -21,12 +21,14 @@ micos_DBD += base.dbd
 # Include dbd files from all support applications:
 #ifdef ASYN
 micos_DBD += asyn.dbd
+micos_DBD += drvAsynSerialPort.dbd
+micos_DBD += drvAsynIPPort.dbd
 #endif
 micos_DBD += motorSupport.dbd
 micos_DBD += devMicos.dbd
 
 # Add all the support libraries needed by this IOC
-micos_LIBS += micos
+micos_LIBS += Micos
 micos_LIBS += motor
 #ifdef ASYN
 micos_LIBS += asyn
