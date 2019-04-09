@@ -1,0 +1,4 @@
+MOTOR=
+-include $(MOTOR)/configure/RELEASE
+# path to motorMicos is needed to build the IOC inside motorMicos, but outside motor
+MOTOR_MICOS=

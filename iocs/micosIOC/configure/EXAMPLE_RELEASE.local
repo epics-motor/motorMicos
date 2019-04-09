@@ -1,0 +1,6 @@
+# Use the following lines if motorMicos was built inside motor
+MOTOR=
+-include $(MOTOR)/configure/RELEASE
+# Use the following lines if motorMicos was built outside motor
+#!MOTOR_MICOS=
+#!-include $(MOTOR_MICOS)/configure/RELEASE.local
