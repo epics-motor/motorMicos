@@ -201,12 +201,12 @@ asynStatus SMChydraAxis::sendAccelAndVelocity(double acceleration, double veloci
   // static const char *functionName = "SMChydraAxis::sendAccelAndVelocity";
 
   // Send the velocity
-  sprintf(pC_->outString_, "%f %i snv", (velocity * axisRes_), (axisNo_ + 1));
+  sprintf(pC_->outString_, "%f %i snv", abs(velocity * axisRes_), (axisNo_ + 1));
   status = pC_->writeController();
 
   // Send the acceleration
   // acceleration is in units/sec/sec
-  sprintf(pC_->outString_, "%f %i sna", (acceleration * axisRes_), (axisNo_ + 1));
+  sprintf(pC_->outString_, "%f %i sna", abs(acceleration * axisRes_), (axisNo_ + 1));
   status = pC_->writeController();
   return status;
 }
@@ -271,7 +271,7 @@ asynStatus SMChydraAxis::stop(double acceleration )
   //static const char *functionName = "SMChydraAxis::stop";
 
   // Set stop deceleration (will be overridden by accel if accel is higher)
-  sprintf(pC_->outString_, "%f %i ssd", (acceleration * axisRes_), (axisNo_ + 1));
+  sprintf(pC_->outString_, "%f %i ssd", abs(acceleration * axisRes_), (axisNo_ + 1));
   status = pC_->writeController();
 
   sprintf(pC_->outString_, "%i nabort", (axisNo_ + 1));
