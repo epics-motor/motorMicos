@@ -25,6 +25,7 @@ public:
   asynStatus poll(bool *moving);
   asynStatus setPosition(double position);
   asynStatus setClosedLoop(bool closedLoop);
+  asynStatus changeResolution(double newResolution);
 
 private:
   SMChydraController *pC_;          /* Pointer to the asynMotorController to which this axis belongs.
@@ -51,6 +52,7 @@ public:
   void report(FILE *fp, int level);
   SMChydraAxis* getAxis(asynUser *pasynUser);
   SMChydraAxis* getAxis(int axisNo);
+  asynStatus changeResolution(int axisNo, double newResolution);
 
 friend class SMChydraAxis;
 };

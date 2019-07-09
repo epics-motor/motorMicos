@@ -79,6 +79,48 @@ extern "C" int SMChydraCreateController(const char *portName, const char *SMChyd
   return(asynSuccess);
 }
 
+
+/** Specify a new resolution for an SMC hydra axis.
+  * Configuration command, called directly or from iocsh
+  * \param[in] SMChydraPortName  The name of the drvAsynIPPPort that was created previously to connect to the SMC hydra controller 
+  * \param[in] axisNo            Index of the desired axis 
+  * \param[in] newResolution     The new resolution of the specified axis
+  */
+extern "C" int SMChydraChangeResolution(const char *SMChydraPortName, int axisNo, double newResolution)
+{
+  SMChydraController *pC;
+  static const char *functionName = "SMChydraChangeResolution";
+  
+  pC = (SMChydraController*) findAsynPortDriver(SMChydraPortName);
+  if (!pC) {
+    printf("SMChydraDriver.cpp:%s: Error port %s not found\n",
+           functionName, SMChydraPortName);
+    return asynError;
+  }
+  
+  pC->lock();
+  pC->changeResolution(axisNo, newResolution);
+  pC->unlock();
+  
+  return(asynSuccess);
+}
+
+/** Change the resolution of an axis
+  * \param[in] axisNo The index of the axis
+  * \param[in] newResolution The new resolution
+  */
+asynStatus SMChydraController::changeResolution(int axisNo, double newResolution)
+{
+  SMChydraAxis* pAxis;
+  asynStatus status;
+  
+  pAxis = this->getAxis(axisNo);
+  
+  status = pAxis->changeResolution(newResolution);
+  
+  return status;
+}
+
 /** Reports on status of the driver
   * \param[in] fp The file pointer on which report information will be written
   * \param[in] level The level of report detail desired
@@ -168,6 +210,15 @@ SMChydraAxis::SMChydraAxis(SMChydraController *pC, int axisNo)
   pC_->writeReadController();
   sscanf(pC_->inString_, "%lf %lf", &negTravelLimit_, &posTravelLimit_);
 
+}
+/** Change the axis resolution
+  * \param[in] newResolution The new resolution
+  */
+asynStatus SMChydraAxis::changeResolution(double newResolution)
+{
+  axisRes_ = newResolution;
+  
+  return asynSuccess;
 }
 
 /** Reports on status of the axis
@@ -486,9 +537,22 @@ static void SMChydraCreateControllerCallFunc(const iocshArgBuf *args)
   SMChydraCreateController(args[0].sval, args[1].sval, args[2].ival, args[3].ival, args[4].ival);
 }
 
+static const iocshArg SMChydraChangeResolutionArg0 = {"SMC hydra port name", iocshArgString};
+static const iocshArg SMChydraChangeResolutionArg1 = {"Axis number", iocshArgInt};
+static const iocshArg SMChydraChangeResolutionArg2 = {"Axis resolution", iocshArgDouble};
+static const iocshArg * const SMChydraChangeResolutionArgs[] = {&SMChydraChangeResolutionArg0,
+                                                             &SMChydraChangeResolutionArg1,
+                                                             &SMChydraChangeResolutionArg2};
+static const iocshFuncDef SMChydraChangeResolutionDef = {"SMChydraChangeResolution", 3, SMChydraChangeResolutionArgs};
+static void SMChydraChangeResolutionCallFunc(const iocshArgBuf *args)
+{
+  SMChydraChangeResolution(args[0].sval, args[1].ival, args[2].dval);
+}
+
 static void SMChydraRegister(void)
 {
   iocshRegister(&SMChydraCreateControllerDef, SMChydraCreateControllerCallFunc);
+  iocshRegister(&SMChydraChangeResolutionDef, SMChydraChangeResolutionCallFunc);
 }
 
 extern "C" {
