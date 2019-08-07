@@ -3,7 +3,7 @@
 ## __R1-1 (2019-08-08)__
 R1-1 is a release based on the master branch.  
 
-### Changes since R1-1
+### Changes since R1-0
 
 #### New features
 * Pull request [#3](https://github.com/epics-motor/motorMicos/pull/3): Added SMChydraChangeResolution to allow the resolution of an axis to be corrected when the it differs from the value reported by getclperiod
