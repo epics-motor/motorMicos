@@ -47,6 +47,9 @@ SMChydraController::SMChydraController(const char *portName, const char *SMChydr
   SMChydraAxis *pAxis;
   static const char *functionName = "SMChydraController::SMChydraController";
 
+  // Create controller-specific parameters
+  createParam(SMChydraRegulatorModeString, asynParamInt32, &SMChydraRegulatorMode_);
+
   /* Connect to SMC hydra controller */
   status = pasynOctetSyncIO->connect(SMChydraPortName, 0, &pasynUserController_, NULL);
   if (status) {
@@ -345,6 +348,8 @@ asynStatus SMChydraAxis::setPosition(double position)
 asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
 {
   asynStatus status = asynSuccess;
+  int regulatorMode;
+  int cloopValue;
   //static const char *functionName = "SMChydraAxis::setClosedLoop";
 
   switch (motorForm_)
@@ -368,8 +373,12 @@ asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
     case 1:
       // Linear or torque motor
 
+      //
+      pC_->getIntegerParam(axisNo_, pC_->SMChydraRegulatorMode_, &regulatorMode);
+      cloopValue = (closedLoop) ? (regulatorMode ? 1:2) : 0;
+
       // enable closed-loop control
-      sprintf(pC_->outString_, "%i %i setcloop", closedLoop ? 1:0, (axisNo_ + 1));
+      sprintf(pC_->outString_, "%i %i setcloop", cloopValue, (axisNo_ + 1));
       status = pC_->writeController();
 
       // reinit so the closed-loop setting takes effect
