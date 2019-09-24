@@ -354,6 +354,7 @@ asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
 
   switch (motorForm_)
   {
+    /*
     case 0:
       // Stepper motor
 
@@ -369,25 +370,30 @@ asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
       }
 
       break;
+    */
 
+    case 0:
     case 1:
+      // Stepper motor with encoder
       // Linear or torque motor
 
       //
       pC_->getIntegerParam(axisNo_, pC_->SMChydraRegulatorMode_, &regulatorMode);
-      cloopValue = (closedLoop) ? (regulatorMode ? 1:2) : 0;
+      cloopValue = (closedLoop) ? (regulatorMode ? 2:1) : 0;
 
       // enable closed-loop control
       sprintf(pC_->outString_, "%i %i setcloop", cloopValue, (axisNo_ + 1));
       status = pC_->writeController();
 
-      // reinit so the closed-loop setting takes effect
-      sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
-      status = pC_->writeController();
+      if (closedLoop) {
+        // reinit so the closed-loop setting takes effect
+        sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
+        status = pC_->writeController();
 
-      // a delay is required after the init command is sent
-      epicsThreadSleep(0.2);
-
+        // a delay is required after the init command is sent
+        epicsThreadSleep(0.2);
+      }
+      
       break;
 
     default:
