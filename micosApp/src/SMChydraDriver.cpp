@@ -349,7 +349,6 @@ asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
 {
   asynStatus status = asynSuccess;
   int regulatorMode;
-  int cloopValue;
   //static const char *functionName = "SMChydraAxis::setClosedLoop";
 
   switch (motorForm_)
@@ -359,13 +358,12 @@ asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
     case 1:
       // Linear or torque motor
 
-      // Convert the regulator mode to the value used by the setcloop command
+      // Get the regulator mode (0 = open-loop, 1 = standard, 2 = adaptive)
       pC_->getIntegerParam(axisNo_, pC_->SMChydraRegulatorMode_, &regulatorMode);
-      cloopValue = (closedLoop) ? (regulatorMode ? 2:1) : 0;
       
       if (closedLoop) {
         // enable closed-loop control
-        sprintf(pC_->outString_, "%i %i setcloop", cloopValue, (axisNo_ + 1));
+        sprintf(pC_->outString_, "%i %i setcloop", regulatorMode, (axisNo_ + 1));
         status = pC_->writeController();
         
         // reinit so the closed-loop setting takes effect (this powers on the motor)
