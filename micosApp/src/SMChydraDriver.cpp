@@ -354,44 +354,30 @@ asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
 
   switch (motorForm_)
   {
-    /*
     case 0:
-      // Stepper motor
-
-      // reinit to clear a motor fault when CNEN=1
-      if (closedLoop)
-      {
-        sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
-	status = pC_->writeController();
-	
-        // a delay is required after the init command is sent
-	epicsThreadSleep(0.2);
-	
-      }
-
-      break;
-    */
-
-    case 0:
-    case 1:
       // Stepper motor with encoder
+    case 1:
       // Linear or torque motor
 
-      //
+      // Convert the regulator mode to the value used by the setcloop command
       pC_->getIntegerParam(axisNo_, pC_->SMChydraRegulatorMode_, &regulatorMode);
       cloopValue = (closedLoop) ? (regulatorMode ? 2:1) : 0;
-
-      // enable closed-loop control
-      sprintf(pC_->outString_, "%i %i setcloop", cloopValue, (axisNo_ + 1));
-      status = pC_->writeController();
-
+      
       if (closedLoop) {
-        // reinit so the closed-loop setting takes effect
+        // enable closed-loop control
+        sprintf(pC_->outString_, "%i %i setcloop", cloopValue, (axisNo_ + 1));
+        status = pC_->writeController();
+        
+        // reinit so the closed-loop setting takes effect (this powers on the motor)
         sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
         status = pC_->writeController();
 
         // a delay is required after the init command is sent
         epicsThreadSleep(0.2);
+      } else {
+        // disable closed-loop control
+        sprintf(pC_->outString_, "%i motoroff", (axisNo_ + 1));
+        status = pC_->writeController();
       }
       
       break;
