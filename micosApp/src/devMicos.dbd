@@ -5,3 +5,4 @@ driver(drvMicos)
 
 registrar(MicosmotorRegister)
 registrar(SMChydraRegister)
+registrar(SMCcorvusRegister)
