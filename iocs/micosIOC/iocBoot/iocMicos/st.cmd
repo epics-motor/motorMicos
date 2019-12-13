@@ -16,6 +16,7 @@ dbLoadRecords("$(MOTOR)/db/motorUtil.db", "P=micos:")
 ##
 < MoCo.cmd
 < motor.cmd.SMChydra
+< motor.cmd.SMCcorvus
 
 iocInit
 

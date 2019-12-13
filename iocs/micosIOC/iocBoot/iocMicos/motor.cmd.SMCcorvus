@@ -1,0 +1,33 @@
+### motor.cmd.SMCcorvus
+
+# Ethernet
+drvAsynIPPortConfigure("corvusPort", "192.168.1.170:2103", 0, 0, 0)
+# Serial
+#drvAsynSerialPortConfigure("corvusPort", "/dev/ttyS1", 0, 0, 0)
+
+# Only show errors
+asynSetTraceMask("corvusPort", 0, 1)
+# Leave ascii selected so traces can be turned on with a single click
+asynSetTraceIOMask("corvusPort", 0, 1)
+
+# Set end-of-string terminators
+asynOctetSetInputEos("corvusPort",0,"\r\n")
+asynOctetSetOutputEos("corvusPort",0,"\r\n")
+
+dbLoadTemplate("motor.substitutions.SMCcorvus")
+
+# SMCcorvusCreateController(
+#    port name,
+#    asyn port name,
+#    num axes,
+#    moving poll period (ms),
+#    idle poll period (ms) )
+SMCcorvusCreateController("Corvus1", "corvusPort", 3, 100, 500)
+
+# This sleep is useful when asyn traces are enabled
+#!epicsThreadSleep(3.0)
+
+# Include an asyn record for each motor to make it easy to enable diagnostic messages
+dbLoadRecords("$(ASYN)/db/asynRecord.db","P=micos:,R=corvusComm,PORT=corvusPort,ADDR=0,OMAX=256,IMAX=256")
+dbLoadRecords("$(ASYN)/db/asynRecord.db","P=micos:,R=corvusAsyn1,PORT=Corvus1,ADDR=0,OMAX=256,IMAX=256")
+dbLoadRecords("$(ASYN)/db/asynRecord.db","P=micos:,R=corvusAsyn2,PORT=Corvus1,ADDR=1,OMAX=256,IMAX=256")
