@@ -1,0 +1,15 @@
+# Database for extra PVs for SMC Hydra controllers
+
+record(mbbo,"$(P)$(R)RegulatorMode") {
+    field(DESC,"Regulator Mode")
+    field(PINI, "1")
+    field(VAL,"$(VAL)")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),$(ADDR))SMCHYDRA_REGULATOR_MODE")
+    field(ZRST, "Open-Loop")
+    field(ZRVL, "0")
+    field(ONST, "Standard")
+    field(ONVL, "1")
+    field(TWST, "Adaptive")
+    field(TWVL, "2")
+}

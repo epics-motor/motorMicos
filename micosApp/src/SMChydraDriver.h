@@ -9,8 +9,11 @@ USAGE...      Motor driver support for the Micos SMC hydra controller.
 
 #define MAX_SMCHYDRA_AXES 2
 
-// No controller-specific parameters yet
-#define NUM_SMCHYDRA_PARAMS 0  
+// Controller-specific parameters
+#define NUM_SMCHYDRA_PARAMS 1
+
+/** drvInfo strings for extra parameters that the SMC Hydra controller supports */
+#define SMChydraRegulatorModeString "SMCHYDRA_REGULATOR_MODE"
 
 class epicsShareClass SMChydraAxis : public asynMotorAxis
 {
@@ -53,6 +56,9 @@ public:
   SMChydraAxis* getAxis(asynUser *pasynUser);
   SMChydraAxis* getAxis(int axisNo);
   asynStatus changeResolution(int axisNo, double newResolution);
+
+protected:
+  int SMChydraRegulatorMode_;    /** Regulator mode parameter index */
 
 friend class SMChydraAxis;
 };

@@ -47,6 +47,9 @@ SMChydraController::SMChydraController(const char *portName, const char *SMChydr
   SMChydraAxis *pAxis;
   static const char *functionName = "SMChydraController::SMChydraController";
 
+  // Create controller-specific parameters
+  createParam(SMChydraRegulatorModeString, asynParamInt32, &SMChydraRegulatorMode_);
+
   /* Connect to SMC hydra controller */
   status = pasynOctetSyncIO->connect(SMChydraPortName, 0, &pasynUserController_, NULL);
   if (status) {
@@ -345,40 +348,36 @@ asynStatus SMChydraAxis::setPosition(double position)
 asynStatus SMChydraAxis::setClosedLoop(bool closedLoop)
 {
   asynStatus status = asynSuccess;
+  int regulatorMode;
   //static const char *functionName = "SMChydraAxis::setClosedLoop";
 
   switch (motorForm_)
   {
     case 0:
-      // Stepper motor
-
-      // reinit to clear a motor fault when CNEN=1
-      if (closedLoop)
-      {
-        sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
-	status = pC_->writeController();
-	
-        // a delay is required after the init command is sent
-	epicsThreadSleep(0.2);
-	
-      }
-
-      break;
-
+      // Stepper motor with encoder
     case 1:
       // Linear or torque motor
 
-      // enable closed-loop control
-      sprintf(pC_->outString_, "%i %i setcloop", closedLoop ? 1:0, (axisNo_ + 1));
-      status = pC_->writeController();
+      // Get the regulator mode (0 = open-loop, 1 = standard, 2 = adaptive)
+      pC_->getIntegerParam(axisNo_, pC_->SMChydraRegulatorMode_, &regulatorMode);
+      
+      if (closedLoop) {
+        // enable closed-loop control
+        sprintf(pC_->outString_, "%i %i setcloop", regulatorMode, (axisNo_ + 1));
+        status = pC_->writeController();
+        
+        // reinit so the closed-loop setting takes effect (this powers on the motor)
+        sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
+        status = pC_->writeController();
 
-      // reinit so the closed-loop setting takes effect
-      sprintf(pC_->outString_, "%i init", (axisNo_ + 1));
-      status = pC_->writeController();
-
-      // a delay is required after the init command is sent
-      epicsThreadSleep(0.2);
-
+        // a delay is required after the init command is sent
+        epicsThreadSleep(0.2);
+      } else {
+        // disable closed-loop control
+        sprintf(pC_->outString_, "%i motoroff", (axisNo_ + 1));
+        status = pC_->writeController();
+      }
+      
       break;
 
     default:

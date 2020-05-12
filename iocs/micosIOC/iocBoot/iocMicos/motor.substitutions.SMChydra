@@ -1,4 +1,4 @@
-file "$(MOTOR)/db/asyn_motor.db"
+file "$(TOP)/db/asyn_motor.db"
 {
   pattern
   {P,       M,      DTYP,    PORT,   ADDR,  DESC,	EGU,  DIR,  VMAX,  VELO,  VBAS,  ACCL,  BDST,     BVEL,  BACC,  MRES,   PREC,  DHLM,       DLLM,   INIT}
@@ -6,3 +6,17 @@ file "$(MOTOR)/db/asyn_motor.db"
   {micos:,  m4, "asynMotor", Hydra1,  1,    "m4",   degrees,  Pos,  15.,   3.,    .05,    .5,    0,       1.0,    2,	0.01,     2,   175,       -175,     ""}
 }
 
+#
+# The VAL macro passed to SMChydraAxis.db is the regulator mode,
+# which can have the following values:
+#   0 = "Open-Loop"
+#   1 = "Standard"
+#   2 = "Adaptive"
+#
+file "$(TOP)/db/SMChydraAxis.db"
+{
+  pattern
+  {P,          R,  DTYP,        PORT,   ADDR,  VAL}
+  {micos:,    m3:, "asynMotor", Hydra1,  0,    1}
+  {micos:,    m4:, "asynMotor", Hydra1,  1,    1}
+}
