@@ -1,5 +1,21 @@
 # motorMicos Releases
 
+## __R2-0 (2020-05-12)__
+R2-0 is a release based on the master branch.  
+
+### Changes since R1-1
+
+#### New features
+* Pull request [#7](https://github.com/epics-motor/motorMicos/pull/7): [Michael Dunning](https://github.com/mpdunning) added support for the SMC Corvus Eco
+* Pull request [#8](https://github.com/epics-motor/motorMicos/pull/8): A new database, ``SMChydraAxis.db``, provides a regulator mode record that allows adaptive regulator mode to be used.
+
+#### Modifications to existing features
+* Pull request [#8](https://github.com/epics-motor/motorMicos/pull/8): The behavior of ``setClosedLoop()`` in the SMC hydra driver has changed.  The argument to the ``setcloop`` command is determined by the new regulator mode.  The ``motoroff`` command is now sent to the controller when ``closedLoop`` is false.
+
+#### Bug fixes
+* Commit [6049202](https://github.com/epics-motor/motorMicos/commit/6049202cd3a0f8c9f0450f179baeb3e9503785df): Include ``$(MOTOR)/modules/RELEASE.$(EPICS_HOST_ARCH).local`` instead of ``$(MOTOR)/configure/RELEASE``
+* Pull request [#5](https://github.com/epics-motor/motorMicos/pull/5): Eliminated compiler warnings
+
 ## __R1-1 (2019-08-08)__
 R1-1 is a release based on the master branch.  
 
