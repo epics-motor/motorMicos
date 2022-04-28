@@ -1,7 +1,8 @@
 # motorMicos
 EPICS motor drivers for the following [Micos](https://www.pi-usa.us) controllers: MoCo dc controller, SMC hydra controller, SMC corvus controller
 
-[![Build Status](https://travis-ci.org/epics-motor/motorMicos.png)](https://travis-ci.org/epics-motor/motorMicos)
+[![Build Status](https://github.com/epics-motor/motorMicos/actions/workflows/ci-scripts-build.yml/badge.svg)](https://github.com/epics-motor/motorMicos/actions/workflows/ci-scripts-build.yml)
+<!--[![Build Status](https://travis-ci.org/epics-motor/motorMicos.png)](https://travis-ci.org/epics-motor/motorMicos)-->
 
 motorMicos is a submodule of [motor](https://github.com/epics-modules/motor).  When motorMicos is built in the ``motor/modules`` directory, no manual configuration is needed.
 
