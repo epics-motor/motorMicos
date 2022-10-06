@@ -220,22 +220,23 @@ asynStatus SMCTaurusAxis::poll(bool *moving)
     int highLimit;
     int ignoreLowLimit;
     int ignoreHighLimit;
-    int axisStatus=-1;
-    double position=0.0;
+    int axisStatus = -1;
+    double position = 0.0;
     asynStatus comStatus;
 
     static const char *functionName = "SMCTaurusAxis::poll";
 
-    int limit_switches;
-    controller->getIntegerParam(controller->SMCTaurusLimitType_, &limit_switches);
-    controller->getAxis(0)->setLimitSwitches(limit_switches);
+    // A different implementation for setting and reading current limit switches configuration.
+    // int limit_switches;
+    // controller->getIntegerParam(controller->SMCTaurusLimitType_, &limit_switches);
+    // controller->getAxis(0)->setLimitSwitches(limit_switches);
 
-    limit_switches = 0;
-    controller->getAxis(0)->getLimitSwitches(0, &limit_switches);
-    controller->setIntegerParam(controller->SMCTaurusLimit1Type_, limit_switches);
-    limit_switches = 0;
-    controller->getAxis(0)->getLimitSwitches(1, &limit_switches);
-    controller->setIntegerParam(controller->SMCTaurusLimit2Type_, limit_switches);
+    // limit_switches = 0;
+    // controller->getAxis(0)->getLimitSwitches(0, &limit_switches);
+    // controller->setIntegerParam(controller->SMCTaurusLimit1Type_, limit_switches);
+    // limit_switches = 0;
+    // controller->getAxis(0)->getLimitSwitches(1, &limit_switches);
+    // controller->setIntegerParam(controller->SMCTaurusLimit2Type_, limit_switches);
 
     // Read the current motor position
     sprintf(controller->outString_, "%i np", (axisNo_ + 1));

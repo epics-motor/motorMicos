@@ -67,6 +67,51 @@ SMCTaurusAxis* SMCTaurusController::getAxis(int axisNo)
     return static_cast<SMCTaurusAxis*>(asynMotorController::getAxis(axisNo));
 }
 
+asynStatus SMCTaurusController::readInt32(asynUser *pasynUser, epicsInt32* value)
+{
+    int function = pasynUser->reason;
+    int address;
+    asynStatus status;
+    getAddress(pasynUser, &address);
+
+    SMCTaurusAxis* axis = this->getAxis(address);
+    if(function == SMCTaurusLimit1Type_)
+    {
+        status = axis->getLimitSwitches(0, value);
+    }
+    else if(function == SMCTaurusLimit2Type_)
+    {
+        status = axis->getLimitSwitches(1, value);
+    }
+    else
+        status = asynMotorController::readInt32(pasynUser, value);
+
+    callParamCallbacks();
+    axis->callParamCallbacks();
+    return (asynStatus) status;
+}
+
+asynStatus SMCTaurusController::writeInt32(asynUser *pasynUser, epicsInt32 value)
+{
+    int function = pasynUser->reason;
+    int address;
+    int status;
+
+    getAddress(pasynUser, &address);
+    SMCTaurusAxis* pAxis = this->getAxis(address);
+    if(function == SMCTaurusLimitType_)
+    {
+        status = pAxis->setLimitSwitches(value);
+    }
+    else 
+        status = asynMotorController::writeInt32(pasynUser, value);
+
+    callParamCallbacks();
+    pAxis->callParamCallbacks();
+    return (asynStatus) status;
+}
+
+
 /** Creates a new SMCTaurusController object.
   * Configuration command, called directly or from iocsh
   * \param[in] portName          The name of the asyn port that will be created for this driver
