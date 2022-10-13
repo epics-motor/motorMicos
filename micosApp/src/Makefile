@@ -16,9 +16,14 @@ SRCS += devMicos.cc drvMicos.cc
 
 # SMC hydra support
 SRCS += SMChydraDriver.cpp
+SRCS += SMChydraAxis.cpp
 
 # SMC corvus support
 SRCS += SMCcorvusDriver.cpp
+
+# SMC Taurus support
+SRCS += SMCTaurusDriver.cpp
+SRCS += SMCTaurusAxis.cpp
 
 Micos_LIBS += motor asyn
 Micos_LIBS += $(EPICS_BASE_IOC_LIBS)
