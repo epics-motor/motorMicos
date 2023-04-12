@@ -1,5 +1,5 @@
 # motorMicos
-EPICS motor drivers for the following [Micos](https://www.pi-usa.us) controllers: MoCo dc controller, SMC hydra controller, SMC corvus controller
+EPICS motor drivers for the following [Micos](https://www.pi-usa.us) controllers: MoCo dc controller, SMC Hydra controller, SMC Corvus controller, SMC Taurus controller
 
 [![Build Status](https://github.com/epics-motor/motorMicos/actions/workflows/ci-scripts-build.yml/badge.svg)](https://github.com/epics-motor/motorMicos/actions/workflows/ci-scripts-build.yml)
 <!--[![Build Status](https://travis-ci.org/epics-motor/motorMicos.png)](https://travis-ci.org/epics-motor/motorMicos)-->
