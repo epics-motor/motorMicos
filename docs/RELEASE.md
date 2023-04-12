@@ -1,5 +1,23 @@
 # motorMicos Releases
 
+## __R2-1 (2023-04-11)__
+R2-1 is a release based on the master branch.  
+
+### Changes since R2-0
+
+#### New features
+* Pull request [#11](https://github.com/epics-motor/motorMicos/pull/11): [Abdalla Al-Dalleh](https://github.com/AbdallaDalleh) added support for the SMC Taurus
+
+#### Modifications to existing features
+* None
+
+#### Bug fixes
+* None
+
+#### Continuous integration
+* Added ci-scripts (v3.0.1)
+* Configured to use Github Actions for CI
+
 ## __R2-0 (2020-05-12)__
 R2-0 is a release based on the master branch.  
 
