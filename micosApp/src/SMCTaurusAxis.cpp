@@ -7,9 +7,9 @@
   * 
   * Initializes register numbers, etc.
   */
-SMCTaurusAxis::SMCTaurusAxis(SMCTaurusController* _controller, int axisNo) 
+SMCTaurusAxis::SMCTaurusAxis(SMCTaurusController* controller, int axisNo) 
     : asynMotorAxis(controller, axisNo),
-      controller(_controller)
+      controller_(controller)
 {
     sprintf(controller->outString_, "%i getclperiod", (axisNo + 1));
     controller->writeReadController();
@@ -53,13 +53,13 @@ asynStatus SMCTaurusAxis::sendAccelAndVelocity(double acceleration, double veloc
     asynStatus status;
 
     // Send the velocity
-    sprintf(controller->outString_, "%f %i snv", fabs(velocity * axisRes_), (axisNo_ + 1));
-    status = controller->writeController();
+    sprintf(controller_->outString_, "%f %i snv", fabs(velocity * axisRes_), (axisNo_ + 1));
+    status = controller_->writeController();
 
     // Send the acceleration
     // acceleration is in units/sec/sec
-    sprintf(controller->outString_, "%f %i sna", fabs(acceleration * axisRes_), (axisNo_ + 1));
-    status = controller->writeController();
+    sprintf(controller_->outString_, "%f %i sna", fabs(acceleration * axisRes_), (axisNo_ + 1));
+    status = controller_->writeController();
     return status;
 }
 
@@ -69,11 +69,11 @@ asynStatus SMCTaurusAxis::move(double position, int relative, double baseVelocit
 
     sendAccelAndVelocity(acceleration, slewVelocity); 
     if (relative) {
-        sprintf(controller->outString_, "%f %i nr", (position * axisRes_), (axisNo_ + 1));
+        sprintf(controller_->outString_, "%f %i nr", (position * axisRes_), (axisNo_ + 1));
     } else {
-        sprintf(controller->outString_, "%f %i nm", (position * axisRes_), (axisNo_ + 1));
+        sprintf(controller_->outString_, "%f %i nm", (position * axisRes_), (axisNo_ + 1));
     }
-    status = controller->writeController();
+    status = controller_->writeController();
     return status;
 }
     
@@ -83,11 +83,11 @@ asynStatus SMCTaurusAxis::home(double baseVelocity, double slewVelocity, double 
 
     sendAccelAndVelocity(acceleration, slewVelocity);
     if (forwards) {
-        sprintf(controller->outString_, "%i nrm", (axisNo_ + 1));
+        sprintf(controller_->outString_, "%i nrm", (axisNo_ + 1));
     } else {
-        sprintf(controller->outString_, "%i ncal", (axisNo_ + 1));
+        sprintf(controller_->outString_, "%i ncal", (axisNo_ + 1));
     }
-    status = controller->writeController();
+    status = controller_->writeController();
     return status;
 }
 
@@ -101,12 +101,12 @@ asynStatus SMCTaurusAxis::moveVelocity(double baseVelocity, double slewVelocity,
     /* SMC Taurus does not have jog command. Move to a limit*/
     if (slewVelocity > 0.) {
         status = sendAccelAndVelocity(acceleration, slewVelocity);
-        sprintf(controller->outString_, "%f %i nm", posTravelLimit_, (axisNo_ + 1));
+        sprintf(controller_->outString_, "%f %i nm", posTravelLimit_, (axisNo_ + 1));
     } else {
         status = sendAccelAndVelocity(acceleration, (slewVelocity * -1.0));
-        sprintf(controller->outString_, "%f %i nm", negTravelLimit_, (axisNo_ + 1));
+        sprintf(controller_->outString_, "%f %i nm", negTravelLimit_, (axisNo_ + 1));
     }
-    status = controller->writeController();
+    status = controller_->writeController();
     return status;
 }
 
@@ -114,8 +114,8 @@ asynStatus SMCTaurusAxis::stop(double acceleration )
 {
     asynStatus status;
 
-    sprintf(controller->outString_, "%i nabort", (axisNo_ + 1));
-    status = controller->writeController();
+    sprintf(controller_->outString_, "%i nabort", (axisNo_ + 1));
+    status = controller_->writeController();
     return status;
 }
 
@@ -125,8 +125,8 @@ asynStatus SMCTaurusAxis::setPosition(double position)
 
     // The argument to the setnpos command is the distance from the current position of the
     // desired origin, which is why the position needs to be multiplied by -1.0
-    sprintf(controller->outString_, "%f %i setnpos", (position * axisRes_ * -1.0), (axisNo_ + 1));
-    status = controller->writeController();
+    sprintf(controller_->outString_, "%f %i setnpos", (position * axisRes_ * -1.0), (axisNo_ + 1));
+    status = controller_->writeController();
     return status;
 }
 
@@ -135,19 +135,19 @@ asynStatus SMCTaurusAxis::setClosedLoop(bool closedLoop)
     asynStatus status = asynSuccess;
     if (closedLoop) {
         // enable closed-loop control
-        sprintf(controller->outString_, "%i %i setcloop", closedLoop, (axisNo_ + 1));
-        status = controller->writeController();
+        sprintf(controller_->outString_, "%i %i setcloop", closedLoop, (axisNo_ + 1));
+        status = controller_->writeController();
 
         // reinit so the closed-loop setting takes effect (this powers on the motor)
-        sprintf(controller->outString_, "%i init", (axisNo_ + 1));
-        status = controller->writeController();
+        sprintf(controller_->outString_, "%i init", (axisNo_ + 1));
+        status = controller_->writeController();
 
         // a delay is required after the init command is sent
         epicsThreadSleep(0.2);
     } else {
         // disable closed-loop control
-        sprintf(controller->outString_, "%i motoroff", (axisNo_ + 1));
-        status = controller->writeController();
+        sprintf(controller_->outString_, "%i motoroff", (axisNo_ + 1));
+        status = controller_->writeController();
     }
 
     return status;
@@ -156,25 +156,25 @@ asynStatus SMCTaurusAxis::setClosedLoop(bool closedLoop)
 asynStatus SMCTaurusAxis::setHighLimit(double highLimit)
 {
     posTravelLimit_ = highLimit;
-    sprintf(controller->outString_, "%f %f %i setnlimit", negTravelLimit_, posTravelLimit_, (axisNo_ + 1));
-    controller->writeController();
+    sprintf(controller_->outString_, "%f %f %i setnlimit", negTravelLimit_, posTravelLimit_, (axisNo_ + 1));
+    controller_->writeController();
     return asynSuccess;
 }
 
 asynStatus SMCTaurusAxis::setLowLimit(double lowLimit)
 {
     negTravelLimit_ = lowLimit;
-    sprintf(controller->outString_, "%f %f %i setnlimit", negTravelLimit_, posTravelLimit_, (axisNo_ + 1));
-    controller->writeController();
+    sprintf(controller_->outString_, "%f %f %i setnlimit", negTravelLimit_, posTravelLimit_, (axisNo_ + 1));
+    controller_->writeController();
     return asynSuccess;
 }
 
 asynStatus SMCTaurusAxis::setLimitSwitches(int value)
 {
-    sprintf(controller->outString_, "%i 0 %i setsw", value, (axisNo_ + 1));
-    controller->writeController();
-    sprintf(controller->outString_, "%i 1 %i setsw", value, (axisNo_ + 1));
-    controller->writeController();
+    sprintf(controller_->outString_, "%i 0 %i setsw", value, (axisNo_ + 1));
+    controller_->writeController();
+    sprintf(controller_->outString_, "%i 1 %i setsw", value, (axisNo_ + 1));
+    controller_->writeController();
     return asynSuccess;
 }
 
@@ -182,9 +182,9 @@ asynStatus SMCTaurusAxis::getLimitSwitches(int limitIndex, int* value)
 {
     int axis_1;
     int axis_2;
-    sprintf(controller->outString_, "%i getsw", (axisNo_ + 1));
-    controller->writeReadController();
-    int status = sscanf(controller->inString_, "%i %i", &axis_1, &axis_2);
+    sprintf(controller_->outString_, "%i getsw", (axisNo_ + 1));
+    controller_->writeReadController();
+    int status = sscanf(controller_->inString_, "%i %i", &axis_1, &axis_2);
     if(status != 2)
     {
         printf("Could not parse getsw response.\n");
@@ -228,46 +228,46 @@ asynStatus SMCTaurusAxis::poll(bool *moving)
 
     // A different implementation for setting and reading current limit switches configuration.
     // int limit_switches;
-    // controller->getIntegerParam(controller->SMCTaurusLimitType_, &limit_switches);
-    // controller->getAxis(0)->setLimitSwitches(limit_switches);
+    // controller_->getIntegerParam(controller_->SMCTaurusLimitType_, &limit_switches);
+    // controller_->getAxis(0)->setLimitSwitches(limit_switches);
 
     // limit_switches = 0;
-    // controller->getAxis(0)->getLimitSwitches(0, &limit_switches);
-    // controller->setIntegerParam(controller->SMCTaurusLimit1Type_, limit_switches);
+    // controller_->getAxis(0)->getLimitSwitches(0, &limit_switches);
+    // controller_->setIntegerParam(controller_->SMCTaurusLimit1Type_, limit_switches);
     // limit_switches = 0;
-    // controller->getAxis(0)->getLimitSwitches(1, &limit_switches);
-    // controller->setIntegerParam(controller->SMCTaurusLimit2Type_, limit_switches);
+    // controller_->getAxis(0)->getLimitSwitches(1, &limit_switches);
+    // controller_->setIntegerParam(controller_->SMCTaurusLimit2Type_, limit_switches);
 
     // Read the current motor position
-    sprintf(controller->outString_, "%i np", (axisNo_ + 1));
-    comStatus = controller->writeReadController();
+    sprintf(controller_->outString_, "%i np", (axisNo_ + 1));
+    comStatus = controller_->writeReadController();
     if (comStatus) goto skip;
 
     // The response string is a double
-    position = atof( (char *) &controller->inString_);
-    setDoubleParam(controller->motorPosition_, (position / axisRes_) );
-    setDoubleParam(controller->motorEncoderPosition_, (position / axisRes_) );
+    position = atof( (char *) &controller_->inString_);
+    setDoubleParam(controller_->motorPosition_, (position / axisRes_) );
+    setDoubleParam(controller_->motorEncoderPosition_, (position / axisRes_) );
   
     // Read the status of this motor
-    sprintf(controller->outString_, "%i nst", (axisNo_ + 1));
-    comStatus = controller->writeReadController();
+    sprintf(controller_->outString_, "%i nst", (axisNo_ + 1));
+    comStatus = controller_->writeReadController();
     if (comStatus) goto skip;
 
     // The response string is an int
-    axisStatus = atoi( (char *) &controller->inString_);
+    axisStatus = atoi( (char *) &controller_->inString_);
   
     // Check the moving bit
     done = !(axisStatus & 0x1);
-    setIntegerParam(controller->motorStatusDone_, done);
-    setIntegerParam(controller->motorStatusMoving_, !done);
+    setIntegerParam(controller_->motorStatusDone_, done);
+    setIntegerParam(controller_->motorStatusMoving_, !done);
     *moving = done ? false:true;
 
     // Read the commanded velocity and acceleration
-    sprintf(controller->outString_, "%i gnv", (axisNo_ + 1));
-    comStatus = controller->writeReadController();
+    sprintf(controller_->outString_, "%i gnv", (axisNo_ + 1));
+    comStatus = controller_->writeReadController();
   
-    sprintf(controller->outString_, "%i gna", (axisNo_ + 1));
-    comStatus = controller->writeReadController();
+    sprintf(controller_->outString_, "%i gna", (axisNo_ + 1));
+    comStatus = controller_->writeReadController();
 
     // Check the limit bit (0x40)
     if (axisStatus & 0x40)
@@ -286,10 +286,10 @@ asynStatus SMCTaurusAxis::poll(bool *moving)
     if(axisStatus & 0x200)
     {
         asynPrint(this->pasynUser_, ASYN_TRACEIO_DRIVER, "%s: axis %i emergency stop switch active.\n",functionName, (axisNo_ + 1));
-        setIntegerParam(controller->motorStatusProblem_, 1);
+        setIntegerParam(controller_->motorStatusProblem_, 1);
     }
     else {
-        setIntegerParam(controller->motorStatusProblem_, 0);
+        setIntegerParam(controller_->motorStatusProblem_, 0);
     }
 
     // Check the device busy bit (0x400)
@@ -304,39 +304,39 @@ asynStatus SMCTaurusAxis::poll(bool *moving)
     // Read switch confiruation
     // Bit 0:	polarity (0 = NO, 1 = NC)
     // Bit 1:	mask (0 = enabled, 1 = disabled)
-    sprintf(controller->outString_, "%i getsw", (axisNo_ + 1));
-    comStatus = controller->writeReadController();
+    sprintf(controller_->outString_, "%i getsw", (axisNo_ + 1));
+    comStatus = controller_->writeReadController();
     if (comStatus) goto skip;
-    sscanf(controller->inString_, "%i %i", &lowLimitConfig_, &highLimitConfig_);
+    sscanf(controller_->inString_, "%i %i", &lowLimitConfig_, &highLimitConfig_);
     ignoreLowLimit = lowLimitConfig_ & 0x2;
     ignoreHighLimit = highLimitConfig_ & 0x2;
   
     // Read status of switches 0=inactive 1=active
-    sprintf(controller->outString_, "%i getswst", (axisNo_ + 1));
-    comStatus = controller->writeReadController();
+    sprintf(controller_->outString_, "%i getswst", (axisNo_ + 1));
+    comStatus = controller_->writeReadController();
     if (comStatus) goto skip;
 
     // The response string is of the form "0 0"
-    sscanf(controller->inString_, "%i %i", &lowLimit, &highLimit);
+    sscanf(controller_->inString_, "%i %i", &lowLimit, &highLimit);
     if (ignoreLowLimit)
-        setIntegerParam(controller->motorStatusLowLimit_, 0);
+        setIntegerParam(controller_->motorStatusLowLimit_, 0);
     else
-        setIntegerParam(controller->motorStatusLowLimit_, lowLimit);
+        setIntegerParam(controller_->motorStatusLowLimit_, lowLimit);
 
         if (ignoreHighLimit)
-        setIntegerParam(controller->motorStatusHighLimit_, 0);
+        setIntegerParam(controller_->motorStatusHighLimit_, 0);
     else
-        setIntegerParam(controller->motorStatusHighLimit_, highLimit);
+        setIntegerParam(controller_->motorStatusHighLimit_, highLimit);
 
-    /*setIntegerParam(controller->motorStatusAtHome_, limit);*/
+    /*setIntegerParam(controller_->motorStatusAtHome_, limit);*/
 
     // Check the drive power bit (0x100)
     driveOn = (axisStatus & 0x100) ? 0 : 1;
-    setIntegerParam(controller->motorStatusPowerOn_, driveOn);
-    setIntegerParam(controller->motorStatusProblem_, 0);
+    setIntegerParam(controller_->motorStatusPowerOn_, driveOn);
+    setIntegerParam(controller_->motorStatusProblem_, 0);
 
     skip:
-    setIntegerParam(controller->motorStatusProblem_, comStatus ? 1:0);
+    setIntegerParam(controller_->motorStatusProblem_, comStatus ? 1:0);
     callParamCallbacks();
     return comStatus ? asynError : asynSuccess;
 }
