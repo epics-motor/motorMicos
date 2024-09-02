@@ -1,4 +1,5 @@
 
+#include <epicsThread.h>
 #include "SMChydraDriver.h"
 
 /** Creates a new SMChydraAxis object.
