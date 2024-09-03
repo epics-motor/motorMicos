@@ -1,4 +1,5 @@
 
+#include <epicsThread.h>
 #include "SMCTaurusDriver.h"
 
 /** Creates a new SMCTaurusAxis object.
