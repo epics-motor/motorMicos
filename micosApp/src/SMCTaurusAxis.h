@@ -28,7 +28,7 @@ public:
     void report(FILE *fp, int level);
 
 private:
-    SMCTaurusController* controller;
+    SMCTaurusController* controller_;
     asynStatus sendAccelAndVelocity(double accel, double velocity);
     int motorForm_;
     int polePairs_;
