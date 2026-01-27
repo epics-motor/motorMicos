@@ -1,5 +1,23 @@
 # motorMicos Releases
 
+## __R2-1-1 (2026-01-27)__
+R2-1-1 is a release based on the master branch.
+
+### Changes since R2-1
+
+#### New features
+* None
+
+#### Modifications to existing features
+* None
+
+#### Bug fixes
+* Pull request [#12](https://github.com/epics-motor/motorMicos/pull/12): [Torsten Bögershausen](https://github.com/tboegi) added epicsThread.h to fix a bug when compiling against EPICS base 3.15
+* Pull request [#13](https://github.com/epics-motor/motorMicos/pull/13): [Torsten Bögershausen](https://github.com/tboegi) eliminated a compiler warning in SMCTaurusAxis
+
+#### Continuous integration
+* Upgraded ci-scripts (v3.4.1)
+
 ## __R2-1 (2023-04-11)__
 R2-1 is a release based on the master branch.  
 
